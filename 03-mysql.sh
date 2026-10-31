@@ -15,11 +15,16 @@ validate $? "Enable and start MySQL"
 mysql_secure_installation --set-root-pass RoboShop@1
 validate $? "MySQL root password setup"
 
-sudo mysql <<EOF
+mysql -uroot -pRoboShop@1 <<EOF
 CREATE USER IF NOT EXISTS 'shipping'@'%' IDENTIFIED BY 'RoboShop@1';
+
 GRANT ALL PRIVILEGES ON shipping.* TO 'shipping'@'%';
+GRANT ALL PRIVILEGES ON cities.* TO 'shipping'@'%';
+
 FLUSH PRIVILEGES;
 EOF
+
+validate $? "MySQL shipping user creation and permissions"
 
 validate $? "MySQL shipping user creation"
 
