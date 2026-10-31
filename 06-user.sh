@@ -8,7 +8,7 @@ check_root
 
 app_setup
 
-nodejs_steup
+nodejs_setup
 
 systemd_setup
 
