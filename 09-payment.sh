@@ -1,6 +1,6 @@
 #!/bin/bash
 
-app_name=shipping
+app_name=payment
 
 source ./common.sh
 
