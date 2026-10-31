@@ -64,6 +64,17 @@ java_setup(){
     validate $? "Roboshop shipping jar rename"
 }
 
+python_setup(){
+    dnf install python3.14 python3.14-pip -y &>> $logs_file
+    validate $? "Python3.14 installation"
+    
+    python3.14 -m venv /app/.venv &>> $logs_file
+    validate $? "Roboshop payment virtual environment setup"
+
+    /app/.venv/bin/pip install -r requirements.txt &>> $logs_file
+    validate $? "Roboshop payment dependencies installation"
+}
+
 app_setup(){
         id roboshop &>> $logs_file
     if [ $? -ne 0 ]; then
