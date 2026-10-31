@@ -4,6 +4,8 @@ source ./common.sh
 
 check_root
 
+
+
 cp rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo &>> $logs_file
 validate $? "RabbitMQ repo setup"
 

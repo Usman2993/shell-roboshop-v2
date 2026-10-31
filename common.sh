@@ -33,6 +33,57 @@ timestamp(){
     date +"%F %T"
 }    
 
+nodejs_setup(){
+    dnf module disable nodejs -y &>> $logs_file
+    dnf module enable nodejs:24 -y &>> $logs_file
+    dnf install nodejs -y &>> $logs_file
+    validate $? "NodeJS installation"  
+
+    npm install &>> $logs_file
+    validate $? "Roboshop $app_name dependencies installation"                     
+}   
+
+app_setup(){
+        id roboshop &>> $logs_file
+    if [ $? -ne 0 ]; then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>> $logs_file
+        validate $? "Roboshop system user creation"
+    else
+        echo -e "$(timestamp) [INFO] Roboshop system user already exists...${Y}SKIPPING${N}" | tee -a "$logs_file"
+    fi  
+
+    rm -rf /app &>> $logs_file
+    validate $? "Roboshop application folder cleanup"
+
+    mkdir -p /app
+    validate $? "Roboshop application folder creation"
+
+    curl -L -o "/tmp/$app_name.zip" "https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/$app_name-v4.zip" &>> $logs_file
+    validate $? "Roboshop $app_name artifact download"
+
+    cd /app
+    unzip "/tmp/$app_name.zip" &>> $logs_file
+    validate $? "Roboshop $app_name artifact unzip" 
+}   
+
+systemd_setup(){
+    sed -i -e "s/DOMAIN_NAME/${DOMAIN_NAME}/" "$scripts_dir/$app_name.service" &>> "$logs_file"
+    validate $? "$app_name service configuration"
+
+    cp "$scripts_dir/$app_name.service" /etc/systemd/system/$app_name.service &>> "$logs_file"
+    validate $? "Roboshop $app_name systemd service file setup"
+
+    systemctl daemon-reload &>> $logs_file
+    systemctl enable $app_name &>> $logs_file
+    systemctl start $app_name &>> $logs_file
+    validate $? "Enable and start Roboshop $app_name service"
+}
+
+restart(){
+    systemctl restart $app_name &>> $logs_file
+    validate $? "Roboshop $app_name service restart"
+}
+
 total_time(){
 echo -e "$(timestamp) [INFO] time taken $SECONDS seconds ============" | tee -a "$logs_file"
 echo -e "$(timestamp) [INFO] ====== Script completed execution ======" | tee -a "$logs_file"}
