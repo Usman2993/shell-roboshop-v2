@@ -29,6 +29,10 @@ validate(){
     fi
 }
 
+timestamp(){
+    date +"%F %T"
+}    
+
 total_time(){
 echo -e "$(timestamp) [INFO] time taken $SECONDS seconds ============" | tee -a "$logs_file"
 echo -e "$(timestamp) [INFO] ====== Script completed execution ======" | tee -a "$logs_file"}
