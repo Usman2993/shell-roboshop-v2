@@ -9,10 +9,12 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+check_root(){
 if [ $user_id -ne 0 ]; then
     echo "Please run the script with sudo access"
     exit 1   
 fi
+}
 
 mkdir -p $logs_folder
 
@@ -25,4 +27,9 @@ validate(){
     else 
         echo -e "${2}..${G} successful${N}" | tee -a "$logs_file"
     fi
+}
+
+total_time(){
+echo -e "$(timestamp) [INFO] time taken $SECONDS seconds ============" | tee -a "$logs_file"
+echo -e "$(timestamp) [INFO] ====== Script completed execution ======" | tee -a "$logs_file"}
 }
