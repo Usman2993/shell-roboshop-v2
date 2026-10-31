@@ -45,6 +45,25 @@ nodejs_setup(){
     validate $? "Roboshop $app_name dependencies installation"                     
 }   
 
+java_setup(){
+        dnf module enable maven:3.9 -y &>> $logs_file
+    dnf install maven java-25-openjdk-devel -y &>> $logs_file
+    validate $? "Maven and Java installation"
+
+    alternatives --set java "//usr/lib/jvm/java-25-openjdk/bin/java" &>> $logs_file
+    validate $? "Java alternatives setup java 25 as default"
+
+    echo "export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/java)))" > /etc/profile.d/java.sh
+    source /etc/profile.d/java.sh
+    echo $JAVA_HOME
+    validate $? "setting JAVA_HOME for maven"
+    mvn clean package &>> $logs_file
+    validate $? "Roboshop user dependencies installation"
+
+    mv target/shipping.jar shipping.jar
+    validate $? "Roboshop shipping jar rename"
+}
+
 app_setup(){
         id roboshop &>> $logs_file
     if [ $? -ne 0 ]; then
